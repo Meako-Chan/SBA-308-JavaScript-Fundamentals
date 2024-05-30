@@ -7,7 +7,7 @@
 //Edge Cases: AssignmentGroup does not belong to course course_id
 //Multiple Courses, assignments with matching id
 function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
-
+    const AssignmentValidation = validateAssignmentGroup(CourseInfo,AssignmentGroup);
 }
 
 //With a learner id forms an array with all assignments
@@ -34,10 +34,15 @@ function validateAssignments(LearnerSubmissions, AssignmentGroup){
 
 //Function to validate Assignment group is for valid course
 function validateAssignmentGroup(CourseInfo, AssignmentGroup){
-
+    try{
+       const validate = AssignmentGroup.course_id == CourseInfo.id;
+       return validate;
+    }catch(error){
+       throw new Error("Invalid input, there is either no course id in assignment group or course id in CourseInfo.");
+    }
 }
 
-  // The provided course information.
+// The provided course information.
 const CourseInfo = {
     id: 451,
     name: "Introduction to JavaScript"
@@ -114,3 +119,8 @@ const CourseInfo = {
       }
     }
   ];
+  
+//   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+//   console.log(result);
+
+console.log(validateAssignmentGroup(CourseInfo, AssignmentGroup));
