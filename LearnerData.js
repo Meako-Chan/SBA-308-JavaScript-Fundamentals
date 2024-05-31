@@ -19,6 +19,10 @@ function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
     if(!validateAssignmentIDs(LearnerSubmissions, AssignmentGroup)){
         throw new Error('Invalid Assignment ID in learner submissions!');
     }
+    if(!validatePointsPossible(AssignmentGroup)){
+        throw new Error('Invalid points possible in assignments array in Assignment Group!');
+    }
+    
     
     //Obtain all learner IDs then use a set to find all unique ones
     const learnerIds = LearnerSubmissions.map(submission => submission.learner_id);
@@ -94,6 +98,15 @@ function calculateGrades(LearnerSubmissions, AssignmentGroup){
     
 }
 
+function validatePointsPossible(AssignmentGroup){
+  for(let i = 0; i <AssignmentGroup.assignments.length; i++){
+    if(AssignmentGroup.assignments[i].points_possible < 1){
+      return false;
+    }
+  }
+  return true;
+}
+
 //Function used to ensure all assignment submissions have valid IDs and
 // points_possible is greater than zero.
 function validateAssignmentIDs(LearnerSubmissions, AssignmentGroup){
@@ -119,9 +132,9 @@ function validateAssignmentGroup(CourseInfo, AssignmentGroup){
 
 //If there are multiple submissions,checks for the most recent submission.
 //Unfinished function, was planning to filter old submissions and only include the latest submission.
-function checkSubmission(LearnerSubmissions){
+// function checkSubmission(LearnerSubmissions){
   
-}
+// }
 
 // The provided course information.
 const CourseInfo = {
@@ -205,5 +218,5 @@ const CourseInfo = {
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
-// console.log(result);
+console.log(result);
 
