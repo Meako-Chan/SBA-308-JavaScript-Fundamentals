@@ -15,9 +15,8 @@ After calling the function getLearnerData, it does the following steps:
    -Maps all learner IDs in LearnerSubmissions into learnerIds
    -creates a set and places back into array to get all unique learners.
 3.Creates a learner object isolating submissions for each learner:
-  -entering the for...in loop, for each unique learner ID invokes getLearnerSubmissions to filter out submissions not made by the   
-   current learner and assignments that have not passed their due date, then returns the resulting array and stores it into 
-   currentLearner.
+   -entering the for...in loop, for each unique learner ID invokes getLearnerSubmissions to filter out submissions not made by the current learner and assignments that have not passed their due date, then returns the resulting array and stores it into 
+currentLearner.
 4.Creates learner object to push into result array:
    -invokes calculate_grades which simultaneously calculates all grades and average in a loop and creates the learner object.
    The learner object contains the following:
