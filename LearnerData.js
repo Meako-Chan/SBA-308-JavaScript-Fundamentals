@@ -25,11 +25,14 @@ function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
     // console.log(uniqueIds);
     let learnerData = [];
     //Get each Learner's data and add object to learner data
-    //STILL NEED TO MAKE SURE DUE DATES ARE CORRECT
-    let currentLearner = getLearnerSubmissions(uniqueIds[0], LearnerSubmissions, AssignmentGroup);
-    // console.log(currentLearner)
-    let weightedAverage = getWeightedAverage(currentLearner, AssignmentGroup);
-    let learnerObject = createLearnerObject(currentLearner, AssignmentGroup);
+    for(id in uniqueIds){
+      let currentLearner = getLearnerSubmissions(uniqueIds[id], LearnerSubmissions, AssignmentGroup);
+      // console.log(currentLearner)
+      let Learner = calculateGrades(currentLearner, AssignmentGroup);
+      learnerData.push(Learner)
+      
+    }
+    console.log(learnerData);
     return learnerData;
     
 }   
@@ -60,14 +63,37 @@ function getLearnerSubmissions(id, LearnerSubmissions, AssignmentGroup){
 
 //Takes all assignment points from a student and calculates
 // their weighted average.
-//Assumes the learnersubmission is for only one ID.
-function getWeightedAverage(LearnerSubmissions, AssignmentGroup){
+//Assumes LearberSubmissions is for only one ID.
+//Assumes Submissions are for each unique assignment
+function calculateGrades(LearnerSubmissions, AssignmentGroup){
+    let learner_id = LearnerSubmissions[0].learner_id;
     let total_points = 0;
+    let total_possible_points = 0;
     let counter = 0;
+    const assignment_grades = new Set();
     for(const object of LearnerSubmissions){
-        total_points += object.submission.score;
+        let submission_score = object.submission.score
+        let points_possible = AssignmentGroup.assignments.find(x => x.id === object.assignment_id).points_possible;
+        let due_date = (AssignmentGroup.assignments.find(x => x.id === object.assignment_id).due_at);
+        if(object.submission.submitted_at  > due_date){
+          submission_score = submission_score - (0.1 * points_possible);
+        }
+        let grade = Number((submission_score / points_possible).toFixed(2));
+        assignment_grades.add([object.assignment_id,grade]);
+        // learnerObject[object.assignment_id] = grade;
+        total_points += submission_score;
+        total_possible_points += points_possible;
         counter++;
     }
+    let weightedAverage = (total_points/total_possible_points);
+    let learnerObject = {};
+    learnerObject.id = learner_id;
+    learnerObject.avg = weightedAverage;
+    for(key of assignment_grades){
+      learnerObject[key[0]] = key[1];
+    }
+    return learnerObject;
+    
 }
 
 //Creates learner object to place into learnerData Array.
