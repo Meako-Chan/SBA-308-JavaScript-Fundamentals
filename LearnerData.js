@@ -8,7 +8,11 @@
 //Ask Manara, what if a learnerId has multiple submissions for same assignment
 //or if there are multiple courses and the learner is in multiple courses, do we calculate
 //their weighted average accordingly?
-//when to use break or continue?
+//when to use break or continue? Possible on assignment inclusion based on date?
+//To Do- List:
+//Finish weighted average
+//Augment getLearnerSubmissions to not include assigments that due date has not passed
+//Create learnerObject and add all learners to learnerData to reutrn
 
 //Main Function
 function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
@@ -22,18 +26,35 @@ function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
     let learnerData = [];
     //Get each Learner's data and add object to learner data
     //STILL NEED TO MAKE SURE DUE DATES ARE CORRECT
-    let currentLearner = getLearnerSubmissions(uniqueIds[0], LearnerSubmissions);
-    console.log(currentLearner)
+    let currentLearner = getLearnerSubmissions(uniqueIds[0], LearnerSubmissions, AssignmentGroup);
+    // console.log(currentLearner)
     let weightedAverage = getWeightedAverage(currentLearner, AssignmentGroup);
-
+    let learnerObject = createLearnerObject(currentLearner, AssignmentGroup);
     return learnerData;
     
 }   
 
 //With a learner id forms an array with all assignments
 //that count towards their average.
-function getLearnerSubmissions(id, LearnerSubmissions){
-    const filtered = LearnerSubmissions.filter(submission => submission.learner_id === id);
+function getLearnerSubmissions(id, LearnerSubmissions, AssignmentGroup){
+    let date = new Date;
+    let day = date.getDate();
+    let month = date.getMonth()+1;
+    if(month < 10){
+      month = '0' + month;
+    }
+    let year = date = date.getFullYear();
+    let currentDate = `${year}-${month}-${day}`;
+    let filtered = LearnerSubmissions.filter(submission => submission.learner_id === id);
+    
+    for(let object of filtered){
+      // console.log(currentDate);
+      let due_date = (AssignmentGroup.assignments.find(x => x.id === object.assignment_id).due_at);
+      if(due_date > currentDate) {
+        filtered.splice(filtered.indexOf(object));
+      }
+    }
+    // console.log(filtered);
     return filtered;
 }
 
@@ -47,6 +68,11 @@ function getWeightedAverage(LearnerSubmissions, AssignmentGroup){
         total_points += object.submission.score;
         counter++;
     }
+}
+
+//Creates learner object to place into learnerData Array.
+function createLearnerObject(LearnerSubmissions, AssignmentGroup, Average){
+
 }
 
 //If there are multiple submissions,checks for the most recent submission.
@@ -150,7 +176,7 @@ const CourseInfo = {
   
 
 
-// const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 let date = new Date;
 let day = date.getDate();
 let month = date.getMonth()+1;
@@ -159,7 +185,7 @@ if(month < 10){
 }
 let year = date = date.getFullYear();
 let currentDate = `${year}-${month}-${day}`;
-console.log(currentDate);
+// console.log(currentDate);
 
 //   console.log(result);
 
