@@ -3,40 +3,68 @@
 //2. For each learner, take learner id, validate assignment IDs and compile a group of submissions for the learner
 //3. Use assignment group and learner submissions to calculate grades and average
 //4. Return all Learner data
-
 //Edge Cases: AssignmentGroup does not belong to course course_id
 //Multiple Courses, assignments with matching id
+//Ask Manara, what if a learnerId has multiple submissions for same assignment
+//or if there are multiple courses and the learner is in multiple courses, do we calculate
+//their weighted average accordingly?
+//when to use break or continue?
+
+//Main Function
 function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
-    const AssignmentValidation = validateAssignmentGroup(CourseInfo,AssignmentGroup);
-}
+    if(!validateAssignmentGroup(CourseInfo,AssignmentGroup)){
+        throw new Error('Assignment Group is not for valid course ID!');
+    }
+    //Obtain all learner IDs then use a set to find all unique ones
+    const learnerIds = LearnerSubmissions.map(submission => submission.learner_id);
+    const uniqueIds = [... new Set(learnerIds)];
+    // console.log(uniqueIds);
+    let learnerData = [];
+    //Get each Learner's data and add object to learner data
+    //STILL NEED TO MAKE SURE DUE DATES ARE CORRECT
+    let currentLearner = getLearnerSubmissions(uniqueIds[0], LearnerSubmissions);
+    console.log(currentLearner)
+    let weightedAverage = getWeightedAverage(currentLearner, AssignmentGroup);
+
+    return learnerData;
+    
+}   
 
 //With a learner id forms an array with all assignments
 //that count towards their average.
 function getLearnerSubmissions(id, LearnerSubmissions){
-
+    const filtered = LearnerSubmissions.filter(submission => submission.learner_id === id);
+    return filtered;
 }
 
 //Takes all assignment points from a student and calculates
-// their weighted average 
-function getWeightedAverage(id, LearnerSubmissions, AssignmentGroup){
-
+// their weighted average.
+//Assumes the learnersubmission is for only one ID.
+function getWeightedAverage(LearnerSubmissions, AssignmentGroup){
+    let total_points = 0;
+    let counter = 0;
+    for(const object of LearnerSubmissions){
+        total_points += object.submission.score;
+        counter++;
+    }
 }
 
-//If there are multiple submissions,checks for the most recent submission
+//If there are multiple submissions,checks for the most recent submission.
 function checkSubmission(LearnerSubmissions){
 
 }
 
-//Function used to ensure all assignment submissions have valid IDs
+//Function used to ensure all assignment submissions have valid IDs and
+// points_possible is greater than zero.
 function validateAssignments(LearnerSubmissions, AssignmentGroup){
 
 }
 
-//Function to validate Assignment group is for valid course
+//Function to validate Assignment group is for a valid course.
 function validateAssignmentGroup(CourseInfo, AssignmentGroup){
     try{
-       const validate = AssignmentGroup.course_id == CourseInfo.id;
-       return validate;
+        const validate = AssignmentGroup.course_id === CourseInfo.id;
+        return validate;
     }catch(error){
        throw new Error("Invalid input, there is either no course id in assignment group or course id in CourseInfo.");
     }
@@ -120,7 +148,19 @@ const CourseInfo = {
     }
   ];
   
-//   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+
+
+// const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+let date = new Date;
+let day = date.getDate();
+let month = date.getMonth()+1;
+if(month < 10){
+    month = '0' + month;
+}
+let year = date = date.getFullYear();
+let currentDate = `${year}-${month}-${day}`;
+console.log(currentDate);
+
 //   console.log(result);
 
-console.log(validateAssignmentGroup(CourseInfo, AssignmentGroup));
+// console.log(validateAssignmentGroup(CourseInfo, AssignmentGroup));
