@@ -82,7 +82,6 @@ function calculateGrades(LearnerSubmissions, AssignmentGroup){
         }
         let grade = Number((submission_score / points_possible).toFixed(2));
         assignment_grades.add([object.assignment_id,grade]);
-        // learnerObject[object.assignment_id] = grade;
         total_points += submission_score;
         total_possible_points += points_possible;
         counter++;
