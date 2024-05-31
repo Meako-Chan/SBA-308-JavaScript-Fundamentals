@@ -13,7 +13,7 @@ After calling the function getLearnerData, it does the following steps:
      AssignmentGroup.
      
 2. Checks for all learners:
-   -Maps all learner IDs in LearnerSubmissions into learnerIds
+   *-Maps all learner IDs in LearnerSubmissions into learnerIds
    -creates a set and places back into array to get all unique learners.
    
 3.Creates a learner object isolating submissions for each learner:
