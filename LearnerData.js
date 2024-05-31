@@ -8,31 +8,28 @@
 //Ask Manara, what if a learnerId has multiple submissions for same assignment
 //or if there are multiple courses and the learner is in multiple courses, do we calculate
 //their weighted average accordingly?
-//when to use break or continue? Possible on assignment inclusion based on date?
-//To Do- List:
-//Finish weighted average
-//Augment getLearnerSubmissions to not include assigments that due date has not passed
-//Create learnerObject and add all learners to learnerData to reutrn
+//when to use break or continue? Possibly on assignment inclusion based on date?
+
 
 //Main Function
 function getLearnerData(CourseInfo,AssignmentGroup,LearnerSubmissions){
     if(!validateAssignmentGroup(CourseInfo,AssignmentGroup)){
         throw new Error('Assignment Group is not for valid course ID!');
     }
+    if(!validateAssignmentIDs(LearnerSubmissions, AssignmentGroup)){
+        throw new Error('Invalid Assignment ID in learner submissions!');
+    }
+    
     //Obtain all learner IDs then use a set to find all unique ones
     const learnerIds = LearnerSubmissions.map(submission => submission.learner_id);
     const uniqueIds = [... new Set(learnerIds)];
-    // console.log(uniqueIds);
     let learnerData = [];
     //Get each Learner's data and add object to learner data
     for(id in uniqueIds){
       let currentLearner = getLearnerSubmissions(uniqueIds[id], LearnerSubmissions, AssignmentGroup);
-      // console.log(currentLearner)
       let Learner = calculateGrades(currentLearner, AssignmentGroup);
-      learnerData.push(Learner)
-      
+      learnerData.push(Learner);
     }
-    console.log(learnerData);
     return learnerData;
     
 }   
@@ -51,19 +48,20 @@ function getLearnerSubmissions(id, LearnerSubmissions, AssignmentGroup){
     let filtered = LearnerSubmissions.filter(submission => submission.learner_id === id);
     
     for(let object of filtered){
-      // console.log(currentDate);
+      if(object === null){
+        break;
+      }
       let due_date = (AssignmentGroup.assignments.find(x => x.id === object.assignment_id).due_at);
       if(due_date > currentDate) {
         filtered.splice(filtered.indexOf(object));
       }
     }
-    // console.log(filtered);
     return filtered;
 }
 
 //Takes all assignment points from a student and calculates
 // their weighted average.
-//Assumes LearberSubmissions is for only one ID.
+//Assumes LearnerSubmissions is for only one ID.
 //Assumes Submissions are for each unique assignment
 function calculateGrades(LearnerSubmissions, AssignmentGroup){
     let learner_id = LearnerSubmissions[0].learner_id;
@@ -96,20 +94,17 @@ function calculateGrades(LearnerSubmissions, AssignmentGroup){
     
 }
 
-//Creates learner object to place into learnerData Array.
-function createLearnerObject(LearnerSubmissions, AssignmentGroup, Average){
-
-}
-
-//If there are multiple submissions,checks for the most recent submission.
-function checkSubmission(LearnerSubmissions){
-
-}
-
 //Function used to ensure all assignment submissions have valid IDs and
 // points_possible is greater than zero.
-function validateAssignments(LearnerSubmissions, AssignmentGroup){
+function validateAssignmentIDs(LearnerSubmissions, AssignmentGroup){
+  const assignmentIDs = AssignmentGroup.assignments.map(assignment => assignment.id);
+  const learnerIDs = LearnerSubmissions.map(submission => submission.assignment_id);
+  const uniqueIDs1 = [... new Set(assignmentIDs)]
+  const uniqueIDs2 = [... new Set(learnerIDs)];
 
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+  return checker(uniqueIDs1,uniqueIDs2);
+  
 }
 
 //Function to validate Assignment group is for a valid course.
@@ -120,6 +115,12 @@ function validateAssignmentGroup(CourseInfo, AssignmentGroup){
     }catch(error){
        throw new Error("Invalid input, there is either no course id in assignment group or course id in CourseInfo.");
     }
+}
+
+//If there are multiple submissions,checks for the most recent submission.
+//Unfinished function, was planning to filter old submissions and only include the latest submission.
+function checkSubmission(LearnerSubmissions){
+  
 }
 
 // The provided course information.
@@ -203,16 +204,6 @@ const CourseInfo = {
 
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-let date = new Date;
-let day = date.getDate();
-let month = date.getMonth()+1;
-if(month < 10){
-    month = '0' + month;
-}
-let year = date = date.getFullYear();
-let currentDate = `${year}-${month}-${day}`;
-// console.log(currentDate);
 
-//   console.log(result);
+// console.log(result);
 
-// console.log(validateAssignmentGroup(CourseInfo, AssignmentGroup));
